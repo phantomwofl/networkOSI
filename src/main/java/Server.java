@@ -6,15 +6,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         System.out.println("Server start");
         int port = 8069;
 
         while (true) {
-            ServerSocket serverSocket = new ServerSocket(port);
-            Socket clientSocket = serverSocket.accept();
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            try (ServerSocket serverSocket = new ServerSocket(port);
+                 Socket clientSocket = serverSocket.accept();
+                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
 
             System.out.printf("New connection accepted. Port: %d\n", clientSocket.getPort());
             out.println("Write your name");
@@ -29,7 +29,10 @@ public class Server {
             } else {
                 out.println("Welcome to the adult zone, " + name + "! Have a good rest, or a good working day!");
             }
-            serverSocket.close();
+//            serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
